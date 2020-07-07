@@ -6,7 +6,10 @@ import * as serviceWorker from './serviceWorker';
 
 function Square(props) {
 	return (
-		<button className="square" onClick={props.onClick}>
+		<button 
+			className={props.active ? "win square" : "square"} 
+			onClick={props.onClick}
+			>
 			{props.value}
 		</button>
 	);
@@ -14,8 +17,13 @@ function Square(props) {
 
 class Board extends React.Component {
 	renderSquare(i) {
+		let active;
+		if (this.props.winners) {
+			active = this.props.winners.includes(i);
+		}
 		return (
 			<Square 
+				active={active}
 				value={this.props.squares[i]}
 				onClick={() => this.props.onClick(i)} 
 			/>
@@ -86,8 +94,7 @@ class Game extends React.Component {
 	render() {
 		const history = this.state.history;
 		const current = history[this.state.stepNumber];
-		const winner = calculateWinner(current.squares);
-		console.log(winner);
+		const winners = calculateWinner(current.squares);
 		const losers = Array.from(current['squares']).filter((el) => el===null).length === 0;
 		const moves = history.map((step, move) => {
 			const desc = move ?
@@ -97,13 +104,15 @@ class Game extends React.Component {
 			return (
 				<li key={move}>
 					<button 
-					className={active ? "active button": "button"}
-					onClick={() => this.jumpTo(move)}>{desc}</button>
+						className={active ? "active button": "button"}
+						onClick={() => this.jumpTo(move)}>{desc}
+					</button>
 				</li>
 			);
 		});
 		let status;
-		if (winner) {
+		if (winners) {
+			const winner = current.squares[winners[0]];
 			status = 'Winner: ' + winner;
 		} else if (losers) {
 			status = 'You both lose';
@@ -118,6 +127,7 @@ class Game extends React.Component {
 			<div className="game-board">
 				<Board
 					squares={current.squares}
+					winners={winners}
 					onClick={(i) => this.handleClick(i)}
 				/>
 			</div>
