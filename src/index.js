@@ -9,7 +9,7 @@ function Square(props) {
 		<button 
 			className={props.active ? "win square" : "square"} 
 			onClick={props.onClick}
-			>
+		>
 			{props.value}
 		</button>
 	);
@@ -64,6 +64,7 @@ class Game extends React.Component {
 			}],
 			stepNumber: 0,
 			xIsNext: true,
+			descending: true,
 		};
 	}
 
@@ -91,25 +92,44 @@ class Game extends React.Component {
 		});
 	}
 
+	flipList() {
+		this.setState({
+			descending: !this.state.descending,
+		});
+	}
+
 	render() {
 		const history = this.state.history;
 		const current = history[this.state.stepNumber];
 		const winners = calculateWinner(current.squares);
 		const losers = Array.from(current['squares']).filter((el) => el===null).length === 0;
+
+		const order = this.state.descending ? "Descending" : "Ascending";
 		const moves = history.map((step, move) => {
-			const desc = move ?
+			if (!this.state.descending) {
+				move = history.length - move - 1; 
+			}
+			const move_number = move ?
 				'Go to move #' + move :
 				'Go to game start';
 			const active = this.state.stepNumber===move;
+
 			return (
 				<li key={move}>
 					<button 
 						className={active ? "active button": "button"}
-						onClick={() => this.jumpTo(move)}>{desc}
+						onClick={() => this.jumpTo(move)}>
+							{move_number}
 					</button>
 				</li>
 			);
 		});
+		var start_value = "0";
+		if (!this.state.descending) {
+			start_value = (history.length - 1).toString();
+		}
+		console.log(start_value);
+
 		let status;
 		if (winners) {
 			const winner = current.squares[winners[0]];
@@ -133,7 +153,12 @@ class Game extends React.Component {
 			</div>
 			<div className="game-info">
 				<div>{status}</div>
-				<ol>{moves}</ol>
+				<button onClick={() => this.flipList()}> 
+					{order}
+				</button>
+				{this.state.descending? 
+					<ol start={start_value}>{moves}</ol> : 
+					<ol reversed start={start_value}>{moves}</ol>}
 			</div>
 		</div>
 	);

@@ -56,3 +56,7 @@ ol, ul {
 .win {
   background-color: limegreen; 
 }
+
+.desc {
+  position: center
+}
