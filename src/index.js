@@ -124,11 +124,6 @@ class Game extends React.Component {
 				</li>
 			);
 		});
-		var start_value = "0";
-		if (!this.state.descending) {
-			start_value = (history.length - 1).toString();
-		}
-		console.log(start_value);
 
 		let status;
 		if (winners) {
@@ -140,7 +135,11 @@ class Game extends React.Component {
 		} else {
 			status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
 		}
-
+		
+		var start_value = "0";
+		if (!this.state.descending) {
+			start_value = (history.length - 1).toString();
+		}
 
 		return (
 			<div className="game">
